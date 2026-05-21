@@ -1,0 +1,37 @@
+services:
+  # MongoDB Database Service
+  db:
+    image: mongo:7.0
+    container_name: cmdb-mongodb
+    environment:
+      - MONGO_INITDB_DATABASE=cmdb_db
+    volumes:
+      - ./mongodb:/data/db
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017 --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Flask Web Application
+  web:
+    build: ./
+    container_name: cmdb-flask
+    ports:
+      - "8080:5000"
+    environment:
+      - DATABASE_URL=mongodb://cmdb-mongodb:27017/cmdb_db
+      - SECRET_KEY=123456789
+    volumes:
+      - ./app:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    # Use non-root user for better security
+    user: "1000:1000"
+
+# Named volumes to persist data
+#volumes:
+#  cmdb_data:

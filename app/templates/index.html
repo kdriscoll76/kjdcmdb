@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KJDCMDB - Configuration Management Database</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .card {
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border: 1px solid rgba(0, 0, 0, 0.125);
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-control:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        .delete-btn {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+        .delete-btn:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+        .status-decommissioned {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+        .status-maintenance {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+        .flash-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 0.375rem;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .flash-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 0.375rem;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .table th {
+            border-top: none;
+            font-weight: 600;
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 0, 0, 0.075);
+        }
+        .footer {
+            margin-top: 2rem;
+            padding: 1rem 0;
+            color: #6c757d;
+            border-top: 1px solid #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-server me-2"></i>KJDCMDB</h1>
+                    <p class="lead">Configuration Management Database</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="badge bg-light text-dark">
+                        <i class="fas fa-database me-1"></i> {{ items|length }} Assets
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="flash-{{ 'success' if 'success' in msg else 'danger' }}">
+                        {{ msg }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Add New Asset</h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="/add" method="POST">
+                            <div class="mb-3">
+                                <label for="host" class="form-label">Hostname *</label>
+                                <input class="form-control" type="text" id="host" name="host" placeholder="e.g., server-01" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="ip" class="form-label">IP Address *</label>
+                                <input class="form-control" type="text" id="ip" name="ip" placeholder="e.g., 192.168.1.5" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="os" class="form-label">Operating System</label>
+                                <select class="form-control" id="os" name="os">
+                                    <option value="rhel">RHEL</option>
+                                    <option value="sle">SUSE</option>
+                                    <option value="win">WIN</option>
+                                    <option value="other">OTHER</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Comment</label>
+                                <textarea class="form-control" id="comment" name="comment" placeholder="Additional information" rows="3"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-control" id="status" name="status">
+                                    <option value="active">Active</option>
+                                    <option value="decommissioned">Decommissioned</option>
+                                    <option value="maintenance">Maintenance</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" type="submit"><i class="fas fa-save me-2"></i>Add Asset</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>System Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6>Database Statistics</h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Total Assets
+                                <span class="badge bg-primary rounded-pill">{{ items|length }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Active Assets
+                                <span class="badge bg-success rounded-pill">{{ items|selectattr('status', 'equalto', 'active')|list|length }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Maintenance Assets
+                                <span class="badge bg-warning rounded-pill">{{ items|selectattr('status', 'equalto', 'maintenance')|list|length }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Decommissioned Assets
+                                <span class="badge bg-danger rounded-pill">{{ items|selectattr('status', 'equalto', 'decommissioned')|list|length }}</span>
+                            </li>
+                        </ul>
+                        
+                        <h6 class="mt-3">Quick Actions</h6>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary" type="button"><i class="fas fa-sync-alt me-2"></i>Refresh Data</button>
+                            <button class="btn btn-outline-secondary" type="button"><i class="fas fa-file-export me-2"></i>Export Data</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="fas fa-list me-2"></i>Asset Inventory</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Hostname</th>
+                                <th>IP Address</th>
+                                <th>OS</th>
+                                <th>Status</th>
+                                <th>Comment</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td><strong>{{ item.host }}</strong></td>
+                                <td>{{ item.ip }}</td>
+                                <td>{{ item.os }}</td>
+                                <td>
+                                    {% if item.status == 'active' %}
+                                        <span class="status-active">Active</span>
+                                    {% elif item.status == 'decommissioned' %}
+                                        <span class="status-decommissioned">Decommissioned</span>
+                                    {% elif item.status == 'maintenance' %}
+                                        <span class="status-maintenance">Maintenance</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ item.comment or 'No comment' }}</td>
+                                <td>
+                                    <form class="d-inline" action="/delete/{{ item._id }}" method="POST" onsubmit="return confirm('Are you sure you want to delete {{ item.host }}?');">
+                                        <button type="submit" class="btn btn-sm delete-btn"><i class="fas fa-trash me-1"></i>Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if not items %}
+                <div class="text-center py-4">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No assets found in the database</p>
+                    <p class="text-muted">Add your first asset using the form on the left</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container text-center">
+            <p class="mb-0">KJDCMDB - Configuration Management Database &copy; {{ year }}</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

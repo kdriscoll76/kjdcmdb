@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must be hidden
+Icon?
+
+# Thumbnails
+._*
+
+# Files that might appear when copying from other devices
+.Spotlight-V100
+.Trashes
