@@ -2,7 +2,7 @@
 .DS_Store
 .AppleDouble
 .LSOverride
-mongodb/*
+
 
 # Icon must be hidden
 Icon?
@@ -13,3 +13,6 @@ Icon?
 # Files that might appear when copying from other devices
 .Spotlight-V100
 .Trashes
+
+# Mongo Database
+mongodb/
