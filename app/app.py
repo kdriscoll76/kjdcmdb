@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
@@ -9,6 +9,9 @@ load_dotenv()
 # Initialize Flask
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'dev-change-me')
+
+# Get password from environment variable
+AUTH_PASSWORD = os.getenv('AUTH_PASSWORD', 'change-me')
 
 # Connect to MongoDB
 client = MongoClient(os.getenv('DATABASE_URL'), serverSelectionTimeoutMS=5000)
@@ -73,6 +76,17 @@ def delete_item(id):
         app.logger.error(f"Error deleting asset: {e}")
         flash(f'Error deleting asset: {str(e)}', 'danger')
     return redirect(url_for('index'))
+
+@app.route('/authenticate', methods=['POST'])
+def authenticate():
+    """Endpoint to authenticate user with password"""
+    data = request.get_json()
+    password = data.get('password', '')
+    
+    if password == AUTH_PASSWORD:
+        return jsonify({'success': True})
+    else:
+        return jsonify({'success': False}), 401
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)

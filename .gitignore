@@ -2,6 +2,7 @@
 .DS_Store
 .AppleDouble
 .LSOverride
+mongodb/*
 
 # Icon must be hidden
 Icon?
