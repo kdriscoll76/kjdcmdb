@@ -1,9 +1,25 @@
-* KJDCMDB
+# KJDCMDB
 
-Custom Server Inventory Database
-![My Awesome Image](images/KJDCMDB_dashboard.png)
-FrontEnd
-- Flask
+## Custom Server Inventory Database
 
-BackEnd
-- Mongodb
+![Dashboard Preview](images/KJDCMDB_dashboard.png)
+
+### Architecture Overview
+
+**FrontEnd**
+- Flask-based web interface
+
+**BackEnd**
+- MongoDB database for persistent storage# KJDCMDB
+
+## Custom Server Inventory Database
+
+![Dashboard Preview](images/KJDCMDB_dashboard.png)
+
+### Architecture Overview
+
+**FrontEnd**
+- Flask-based web interface
+
+**BackEnd**
+- MongoDB database for persistent storage
