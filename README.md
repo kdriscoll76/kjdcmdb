@@ -10,4 +10,4 @@
 - Flask-based web interface
 
 **BackEnd**
-- MongoDB database for persistent storage# KJDCMDB
+- MongoDB database for persistent storage
